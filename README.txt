@@ -8,74 +8,74 @@ License: MIT
 
 == KEY FEATURES ==
 
-• Header-only implementation (0 dependencies)
-• 800-byte footprint including 8x8 font
-• Multi-platform support:
+* Header-only implementation (0 dependencies)
+* 800-byte footprint including 8x8 font
+* Multi-platform support:
   - Embedded systems (STM32, ESP32, Arduino)
   - Terminal/console applications
   - SDL2 desktop applications (optional)
-• Advanced text rendering:
+* Advanced text rendering:
   - Character and text rendering
   - Text measurement (width/height)
   - Multi-line support with auto-wrap
-• Multiple rendering backends:
+* Multiple rendering backends:
   - Pixel callback (universal)
   - Monochrome buffers (1bpp)
   - RGB565 buffers (16-bit color)
   - SDL2 with TrueType fonts (optional)
-• Benchmarking mode
-• MIT licensed
+- Benchmarking mode
+- MIT licensed
 
 == COMPLETE API REFERENCE ==
 
 CORE RENDERING:
-• const uint8_t* ascii_get_char_bitmap(char c)
+* const uint8_t* ascii_get_char_bitmap(char c)
   - Returns 8-byte bitmap for specified ASCII character (32-126)
   - Example: Get 'A' bitmap -> ascii_get_char_bitmap('A')
 
-• void ascii_draw_char(char c, int x, int y, 
+* void ascii_draw_char(char c, int x, int y, 
                       ascii_pixel_fn fn, void* color, void* user_data)
   - Renders character using callback function
   - Callback signature: void fn(int x, int y, void* color, void* user_data)
 
-• int ascii_draw_text(const char* text, int x, int y,
+* int ascii_draw_text(const char* text, int x, int y,
                      ascii_pixel_fn fn, void* color, void* user_data)
   - Renders text string with newline support
   - Returns total width of rendered text
 
 BUFFER RENDERING:
-• void ascii_draw_char_to_mono_buffer(char c, uint8_t* buffer,
+* void ascii_draw_char_to_mono_buffer(char c, uint8_t* buffer,
                                     int width, int height, int x, int y,
                                     uint8_t color)
   - Draws to 1bpp monochrome buffers (embedded displays)
   - color: 0 (off) or 1 (on)
 
-• void ascii_draw_char_to_rgb565_buffer(char c, uint16_t* buffer,
+* void ascii_draw_char_to_rgb565_buffer(char c, uint16_t* buffer,
                                       int width, int height, int x, int y,
                                       uint16_t color)
   - Draws to RGB565 buffers (TFT displays)
   - color: 16-bit RGB565 value (0x0000-0xFFFF)
 
 TEXT MEASUREMENT:
-• int ascii_text_width(const char* text)
+* int ascii_text_width(const char* text)
   - Calculates text width in pixels
   - Handles multi-line text (newlines)
 
-• int ascii_text_height(const char* text)
+* int ascii_text_height(const char* text)
   - Calculates text height in pixels
   - Returns full height for multi-line text
 
 SDL2 EXTENSION (when ASCII_ENABLE_SDL2 defined):
-• ascii_sdl_context* ascii_sdl_init(const char* font_path, int size,
+* ascii_sdl_context* ascii_sdl_init(const char* font_path, int size,
                                   SDL_Color color, SDL_Renderer* renderer)
   - Initializes SDL2 rendering context
   - Returns NULL on failure
 
-• void ascii_sdl_render_text(ascii_sdl_context* ctx,
+* void ascii_sdl_render_text(ascii_sdl_context* ctx,
                            const char* text, int x, int y)
   - Renders text using SDL_ttf
 
-• void ascii_sdl_cleanup(ascii_sdl_context* ctx)
+* void ascii_sdl_cleanup(ascii_sdl_context* ctx)
   - Frees SDL2 resources
 
 == QUICK START EXAMPLES ==
@@ -109,25 +109,25 @@ ascii_sdl_cleanup(ctx);
 == PERFORMANCE METRICS ==
 
 On STM32F103 (72MHz Cortex-M3):
-• 1000 characters/second rendering
-• 42µs per character (8x8)
-• 800B ROM usage (font + code)
+- 1000 characters/second rendering
+- 42µs per character (8x8)
+- 800B ROM usage (font + code)
 
 On x86-64 (3.0GHz):
-• 250,000 characters/second
-• 0.15ms per full screen (128x64)
-• <1KB memory usage
+- 250,000 characters/second
+- 0.15ms per full screen (128x64)
+- <1KB memory usage
 
 == USE CASES ==
 
 Ideal for:
-• Embedded device UIs (STM32/ESP32)
-• Terminal-based applications
-• Debug overlays and HUDs
-• Low-memory graphics systems
-• Retro game interfaces (8-bit style)
-• Sensor dashboards and displays
-• SDL2 prototyping and tools
+- Embedded device UIs (STM32/ESP32)
+- Terminal-based applications
+- Debug overlays and HUDs
+- Low-memory graphics systems
+- Retro game interfaces (8-bit style)
+- Sensor dashboards and displays
+- SDL2 prototyping and tools
 
 == SDL2 INTEGRATION GUIDE ==
 
@@ -161,16 +161,16 @@ Average: 0.125 ms per frame
 == COMPARISON WITH ALTERNATIVES ==
 
 vs. U8g2:
-• 10x smaller footprint
-• No external dependencies
-• Simpler API
-• Better for memory-constrained devices
+- 10x smaller footprint
+- No external dependencies
+- Simpler API
+- Better for memory-constrained devices
 
 vs. SDL_ttf:
-• 100x lighter weight
-• Works on bare metal systems
-• Consistent API across platforms
-• Fixed-size font for predictable performance
+- 100x lighter weight
+- Works on bare metal systems
+- Consistent API across platforms
+- Fixed-size font for predictable performance
 
 == SUPPORT THE PROJECT ==
 
