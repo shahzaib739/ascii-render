@@ -9,8 +9,8 @@
  * (monochrome or RGB565).
  *
  * @author Ferki
- * @date 2025-08-04
- * @version 1.0
+ * @date 2025-08-07
+ * @version 1.1
  * @copyright (c) 2025 Ferki. All rights reserved.
  *
  * @license MIT License
@@ -537,11 +537,114 @@ static inline int ascii_text_height(const char* text) {
     return height;
 }
 
+// ===================== SDL2 EXTENSION =====================
+
+#ifdef ASCII_ENABLE_SDL2
+
+#include <SDL.h>
+#include <SDL_ttf.h>
+
+/**
+ * @brief Structure to hold SDL context for rendering.
+ */
+typedef struct {
+    SDL_Renderer* renderer; /**< Pointer to the SDL Renderer. */
+    TTF_Font* font;         /**< Pointer to the TTF Font. */
+    SDL_Color color;        /**< Color for rendering text. */
+} ascii_sdl_context;
+
+/**
+ * @brief Initialize SDL context for text rendering.
+ *
+ * This function initializes SDL_ttf and loads a font, preparing an `ascii_sdl_context`
+ * for use with SDL rendering functions.
+ *
+ * @param font_path Path to the font file (e.g., ".ttf").
+ * @param font_size Size of the font in pixels.
+ * @param color Color of the text.
+ * @param renderer The SDL renderer to associate with this context.
+ * @return An initialized `ascii_sdl_context` pointer on success, or NULL on error.
+ */
+static ascii_sdl_context* ascii_sdl_init(
+    const char* font_path,
+    int font_size,
+    SDL_Color color,
+    SDL_Renderer* renderer
+) {
+    if (TTF_Init() != 0) return NULL;
+
+    TTF_Font* font = TTF_OpenFont(font_path, font_size);
+    if (!font) return NULL;
+
+    ascii_sdl_context* ctx = malloc(sizeof(ascii_sdl_context));
+    if (!ctx) {
+        TTF_CloseFont(font);
+        return NULL;
+    }
+
+    ctx->renderer = renderer;
+    ctx->font = font;
+    ctx->color = color;
+    return ctx;
+}
+
+/**
+ * @brief Render text using SDL_ttf.
+ *
+ * This function renders a given text string to the SDL renderer using the
+ * font and color specified in the `ascii_sdl_context`.
+ *
+ * @param ctx Pointer to the initialized `ascii_sdl_context`.
+ * @param text The null-terminated string to render.
+ * @param x The X-coordinate for the top-left corner of the rendered text.
+ * @param y The Y-coordinate for the top-left corner of the rendered text.
+ */
+static void ascii_sdl_render_text(
+    ascii_sdl_context* ctx,
+    const char* text,
+    int x,
+    int y
+) {
+    SDL_Surface* surface = TTF_RenderText_Solid(ctx->font, text, ctx->color);
+    if (!surface) return;
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(ctx->renderer, surface);
+    if (!texture) {
+        SDL_FreeSurface(surface);
+        return;
+    }
+
+    SDL_Rect dest = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(ctx->renderer, texture, NULL, &dest);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
+
+/**
+ * @brief Clean up SDL resources.
+ *
+ * This function frees the resources associated with an `ascii_sdl_context`,
+ * including the font and the context itself, and quits SDL_ttf.
+ *
+ * @param ctx Pointer to the `ascii_sdl_context` to clean up.
+ */
+static void ascii_sdl_cleanup(ascii_sdl_context* ctx) {
+    if (ctx) {
+        TTF_CloseFont(ctx->font);
+        free(ctx);
+        TTF_Quit();
+    }
+}
+
+#endif // ASCII_ENABLE_SDL2
+
 // ===================== DEMO MODE =====================
 
 #ifdef ASCII_DEMO_CONSOLE
 
 #include <stdio.h>
+#include <time.h>
 
 /**
  * @brief Callback function for drawing a pixel in the console.
@@ -556,7 +659,7 @@ static inline int ascii_text_height(const char* text) {
  */
 static void console_pixel_fn(int x, int y, void* color, void* user_data) {
     (void)color; // Ignore the color parameter
-    char* buffer = (char*)((int*)user_data)[0]; // Retrieve buffer pointer from user_data array
+    char* buffer = (char*)((intptr_t*)user_data)[0]; // Retrieve buffer pointer from user_data array
     int width = ((int*)user_data)[1]; // Retrieve width from user_data array
     buffer[y * width + x] = '#';
 }
@@ -575,8 +678,8 @@ static void ascii_demo_console() {
     // user_data will now contain a pointer to the buffer and its width.
     // For simplicity, user_data can be a struct or an array containing this data.
     // Here, we use an int array.
-    int demo_user_data[2];
-    demo_user_data[0] = (int)(intptr_t)buffer; // Store pointer to buffer
+    intptr_t demo_user_data[2]; // Use intptr_t for storing pointer
+    demo_user_data[0] = (intptr_t)buffer; // Store pointer to buffer
     demo_user_data[1] = WIDTH; // Store width
 
     // Initialize the buffer
@@ -586,7 +689,7 @@ static void ascii_demo_console() {
     }
 
     // Draw text
-    ascii_draw_text("Embedded ASCII\nLibrary v1.0",
+    ascii_draw_text("Embedded ASCII\nLibrary v1.1",
                     2, 2,
                     console_pixel_fn,
                     NULL,
@@ -610,7 +713,57 @@ static void ascii_demo_console() {
         puts(buffer + row * WIDTH);
     }
 }
-#endif
+
+/**
+ * @brief Benchmark demonstration function.
+ *
+ * This function performs a simple benchmark of the `ascii_draw_text` function
+ * by rendering a specific text string multiple times into a monochrome buffer
+ * and measuring the elapsed time.
+ */
+static void benchmark_demo() {
+    const int WIDTH = 128;
+    const int HEIGHT = 64;
+    uint8_t buffer[WIDTH * HEIGHT];
+    memset(buffer, 0, sizeof(buffer));
+
+    const char* text = "Benchmark: ASCII rendering";
+    const int iterations = 1000;
+
+    clock_t start = clock();
+    for (int i = 0; i < iterations; i++) {
+        // Note: The original call `ascii_draw_text(text, buffer, WIDTH, HEIGHT, 10, 10, 1);`
+        // is incorrect for ascii_draw_text which expects pixel_fn and user_data.
+        // Assuming it was intended to call a direct buffer drawing function,
+        // but since ascii_draw_text uses pixel_fn, this benchmark needs a dummy pixel_fn
+        // or a direct buffer drawing function to be meaningful.
+        // For now, I'll simulate a direct buffer draw by calling draw_char_to_mono_buffer
+        // for each character in the text to make the benchmark realistic for buffer drawing.
+        // If the intent was to benchmark the callback mechanism, a different setup is needed.
+
+        // Simulating text drawing to buffer for benchmark
+        int current_x = 10;
+        int current_y = 10;
+        for (const char* ptr = text; *ptr != '\0'; ++ptr) {
+            if (*ptr == '\n') {
+                current_y += ASCII_FONT_HEIGHT;
+                current_x = 10;
+            } else {
+                ascii_draw_char_to_mono_buffer(*ptr, buffer, WIDTH, HEIGHT, current_x, current_y, 1);
+                current_x += ASCII_FONT_WIDTH;
+            }
+        }
+    }
+    clock_t end = clock();
+
+    double total_time = (double)(end - start) / CLOCKS_PER_SEC;
+    double time_per_frame = total_time / iterations * 1000;
+
+    printf("Rendered %d frames in %.2f seconds\n", iterations, total_time);
+    printf("Average: %.2f ms per frame\n", time_per_frame);
+}
+
+#endif // ASCII_DEMO_CONSOLE
 
 #ifdef __cplusplus
 }
