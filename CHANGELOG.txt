@@ -1,0 +1,42 @@
+ASCII RENDERER CHANGELOG
+========================
+
+v1.1 - 2025-08-07
+------------------
+[MAJOR ENHANCEMENTS]
+• Added text measurement API:
+  - ascii_text_width()
+  - ascii_text_height()
+• Implemented SDL2 integration module:
+  - ascii_sdl_init()
+  - ascii_sdl_render_text()
+  - ascii_sdl_cleanup()
+• Added benchmarking subsystem
+• Implemented multi-line text wrapping
+
+[API IMPROVEMENTS]
+• Added buffer bounds checking
+• Improved character positioning
+• Optimized rendering loops
+• Added RGB565 buffer support
+
+[DEMOS]
+• New SDL2 demo application
+• Terminal-based benchmark tool
+• Performance comparison suite
+• Multi-language examples
+
+[FIXES]
+• Fixed character clipping
+• Corrected newline handling
+• Resolved alignment issues
+• Fixed monochrome buffer overflow
+
+v1.0 - 2025-08-06
+------------------
+• Initial release
+• Basic character/text rendering
+• Monochrome buffer support
+• Console demo mode
+• Callback-based rendering
+• Embedded optimizations
